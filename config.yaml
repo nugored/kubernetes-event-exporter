@@ -16,8 +16,8 @@ receivers:
         cluster: local-test
       url: $LOKI_URL
       layout:
-        namespace: "{{ .Namespace }}"
-        message: "{{ .Message }}"
+#        namespace: "{{ .Namespace }}"
+        message: "{{ .uMessage }}"
         type: "{{ .Type }}"
         reason: "{{ .Reason }}"
         kind: "{{ .InvolvedObject.Kind }}"

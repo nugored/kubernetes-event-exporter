@@ -104,6 +104,8 @@ func (l *Loki) Send(ctx context.Context, ev *kube.EnhancedEvent) error {
 		return err
 	}
 
+	delete(l.cfg.StreamLabels, "namespace")
+
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
