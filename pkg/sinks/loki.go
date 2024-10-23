@@ -53,6 +53,13 @@ func generateTimestamp() string {
 }
 
 func (l *Loki) Send(ctx context.Context, ev *kube.EnhancedEvent) error {
+	if ev.InvolvedObject.Kind == "Node" {
+		l.cfg.StreamLabels["host"] = ev.InvolvedObject.Name
+		delete(l.cfg.Layout, "name")
+	} else {
+		l.cfg.Layout["name"] = "{{ .InvolvedObject.Name }}"
+	}
+
 	eventBody, err := serializeEventWithLayout(l.cfg.Layout, ev)
 	if err != nil {
 		return err
@@ -63,10 +70,6 @@ func (l *Loki) Send(ctx context.Context, ev *kube.EnhancedEvent) error {
 			log.Debug().Msgf("Skipping %s namespace, because it is in ignore list", ev.InvolvedObject.Namespace)
 			return nil
 		}
-	}
-
-	if ev.InvolvedObject.Kind == "Node" {
-		l.cfg.StreamLabels["host"] = ev.InvolvedObject.Name
 	}
 
 	if ev.InvolvedObject.Namespace != "" {
