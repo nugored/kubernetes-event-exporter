@@ -65,8 +65,13 @@ func (l *Loki) Send(ctx context.Context, ev *kube.EnhancedEvent) error {
 		}
 	}
 
+	if ev.InvolvedObject.Kind == "Node" {
+		l.cfg.StreamLabels["host"] = ev.InvolvedObject.Name
+	}
+
 	if ev.InvolvedObject.Namespace != "" {
 		l.cfg.StreamLabels["namespace"] = ev.InvolvedObject.Namespace
+		l.cfg.StreamLabels["index"] = l.cfg.StreamLabels["cluster"] + "-" + ev.InvolvedObject.Namespace
 	}
 
 	timestamp := generateTimestamp()
@@ -105,6 +110,8 @@ func (l *Loki) Send(ctx context.Context, ev *kube.EnhancedEvent) error {
 	}
 
 	delete(l.cfg.StreamLabels, "namespace")
+	delete(l.cfg.StreamLabels, "index")
+	delete(l.cfg.StreamLabels, "host")
 
 	defer resp.Body.Close()
 

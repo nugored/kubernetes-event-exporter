@@ -17,7 +17,7 @@ receivers:
       url: $LOKI_URL
       layout:
 #        namespace: "{{ .Namespace }}"
-        message: "{{ .uMessage }}"
+        message: "{{ .Message }}"
         type: "{{ .Type }}"
         reason: "{{ .Reason }}"
         kind: "{{ .InvolvedObject.Kind }}"
